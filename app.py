@@ -390,7 +390,7 @@ class EnhancedLLMService:
                 
                 if snapshot_path:
                     model_file = snapshot_path / "model.safetensors"
-                    tokenizer_file = snapshot_path / "tokenizer_smp_32k_3.model"
+                    tokenizer_file = snapshot_path / "tokenizer_spm_32k_3.model"
                     
                     if model_file.exists() and tokenizer_file.exists():
                         self.model = loaders.get_moshi_lm(str(model_file), device=device)

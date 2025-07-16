@@ -1,12 +1,45 @@
-cd /workspace
-git clone https://github.com/devasphn/MoshiAI.git
-cd MoshiAI
+# Perfect Voice Assistant - Setup Commands
+
+# Quick Setup (Automated)
+python setup.py
+
+# Manual Setup (Step by step)
 python3 -m venv venv
-source venv/bin/activate
+source venv/bin/activate  # Linux/macOS
+# venv\Scripts\activate   # Windows
+
+# Install system dependencies (Linux)
 apt-get update
-apt-get install -y python3-pip python3-dev build-essential libsndfile1-dev ffmpeg portaudio19-dev
-pip install --upgrade pip wheel
+apt-get install -y python3-pip python3-dev build-essential
+apt-get install -y libsndfile1-dev ffmpeg portaudio19-dev
+apt-get install -y libasound2-dev libpulse-dev
+
+# Install Python dependencies
+pip install --upgrade pip wheel setuptools
 pip install -r requirements.txt
+
+# Create directories
+mkdir -p models/{stt,tts,llm} logs cache
+
+# Download models (optional - fallbacks available)
 python download_models.py
-mkdir -p models/stt models/tts models/llm
+
+# Start the application
 python app.py
+
+# Alternative startup methods
+./start.sh      # Linux/macOS
+start.bat       # Windows
+
+# Access the application
+# Open browser to: http://localhost:8000
+
+# Keyboard shortcuts in the web interface:
+# Ctrl+Space - Toggle recording
+# Clear button - Clear conversation history
+
+# API endpoints:
+# GET /          - Main interface
+# GET /status    - System status and performance metrics
+# GET /health    - Health check
+# WebSocket /ws  - Real-time audio communication
