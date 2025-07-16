@@ -1,23 +1,33 @@
 # Core Moshi package
 moshi==0.2.10
 
-# Unmute.sh specific dependencies
+# Enhanced dependencies for perfect implementation
 torch>=2.0.0
 torchaudio>=2.0.0
 transformers>=4.30.0
 fastapi>=0.100.0
-uvicorn>=0.20.0
+uvicorn[standard]>=0.20.0
 websockets>=11.0
 numpy>=1.24.0
 soundfile>=0.12.0
 huggingface-hub>=0.16.0
 
-# Audio processing
+# Advanced audio processing
 librosa>=0.10.0
 scipy>=1.9.0
 resampy>=0.4.0
+pyaudio>=0.2.11
+webrtcvad>=2.0.10
 
-# Additional dependencies for Kyutai models
+# Model dependencies
 sentencepiece>=0.1.99
 safetensors>=0.3.0
 accelerate>=0.20.0
+
+# Performance and monitoring
+psutil>=5.9.0
+prometheus-client>=0.16.0
+
+# Development and debugging
+python-multipart>=0.0.6
+jinja2>=3.1.0
