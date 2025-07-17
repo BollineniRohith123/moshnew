@@ -392,13 +392,23 @@ class EnhancedLLMService:
                     model_file = snapshot_path / "model.safetensors"
                     tokenizer_file = snapshot_path / "tokenizer_spm_32k_3.model"
                     
+                    logger.info(f"Checking LLM files:")
+                    logger.info(f"  Model file: {model_file} (exists: {model_file.exists()})")
+                    logger.info(f"  Tokenizer file: {tokenizer_file} (exists: {tokenizer_file.exists()})")
+                    
                     if model_file.exists() and tokenizer_file.exists():
+                        logger.info("Loading Moshi LLM model...")
                         self.model = loaders.get_moshi_lm(str(model_file), device=device)
                         self.model.eval()
+                        
+                        logger.info("Loading Moshi LLM tokenizer...")
                         self.tokenizer = spm.SentencePieceProcessor()
                         self.tokenizer.load(str(tokenizer_file))
                         logger.info("✅ Moshi LLM loaded successfully!")
                     else:
+                        # List all files in the directory for debugging
+                        available_files = [f.name for f in snapshot_path.iterdir()]
+                        logger.error(f"LLM model files not found. Available files: {available_files}")
                         raise FileNotFoundError("LLM model files not found")
                 else:
                     raise FileNotFoundError("LLM snapshot path not found")
@@ -690,10 +700,18 @@ async def websocket_endpoint(websocket: WebSocket):
         connection_manager.disconnect(session_id)
 
 if __name__ == "__main__":
+    import os
+    
+    # Use RunPod's default port or environment variable
+    port = int(os.environ.get("PORT", 7860))
+    
+    print(f"🚀 Starting Perfect Voice Assistant on port {port}")
+    print(f"🌐 Access URL: https://{os.environ.get('RUNPOD_POD_ID', 'localhost')}-{port}.proxy.runpod.net")
+    
     uvicorn.run(
         "app:app", 
         host="0.0.0.0", 
-        port=8000, 
+        port=port, 
         log_level="info",
         reload=False,
         workers=1
