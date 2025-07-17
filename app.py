@@ -24,7 +24,6 @@ from huggingface_hub import snapshot_download
 import warnings
 import librosa
 from scipy import signal
-from moshi_api_fix import create_moshi_wrappers
 
 # --- Global Configuration ---
 warnings.filterwarnings("ignore")
@@ -581,7 +580,11 @@ class EnhancedLLMService:
         
         # Question responses
         if text_lower.startswith(("what", "how", "why", "when", "where", "who")):
-            return f"That's an interesting question about {text.split()[-3:]}. Let me think about that."
+            words = text.split()
+            if len(words) >= 3:
+                return f"That's an interesting question about {' '.join(words[-3:])}. Let me think about that."
+            else:
+                return f"That's an interesting question about {' '.join(words)}. Let me think about that."
         
         # Emotional responses
         if any(word in text_lower for word in ["sad", "upset", "angry", "frustrated"]):
