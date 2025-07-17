@@ -702,8 +702,8 @@ async def websocket_endpoint(websocket: WebSocket):
 if __name__ == "__main__":
     import os
     
-    # Use RunPod's default port or environment variable
-    port = int(os.environ.get("PORT", 7860))
+    # Use RunPod's expected port or environment variable
+    port = int(os.environ.get("PORT", 8790))
     
     print(f"🚀 Starting Perfect Voice Assistant on port {port}")
     print(f"🌐 Access URL: https://{os.environ.get('RUNPOD_POD_ID', 'localhost')}-{port}.proxy.runpod.net")
