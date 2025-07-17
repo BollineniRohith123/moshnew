@@ -140,7 +140,8 @@ class AudioProcessor:
         
         # Apply gentle low-pass filter to remove high-frequency noise
         if len(audio_data) > 100:
-            sos = signal.butter(4, 8000, btype='low', fs=self.sample_rate, output='sos')
+            # Use 7500Hz instead of 8000Hz to avoid Nyquist frequency issue
+            sos = signal.butter(4, 7500, btype='low', fs=self.sample_rate, output='sos')
             audio_data = signal.sosfilt(sos, audio_data)
         
         return audio_data.astype(np.float32)
@@ -297,7 +298,9 @@ class EnhancedTTSService:
         try:
             if self.model and self.tokenizer:
                 # Use Kyutai model (if properly loaded)
-                tokens = self.tokenizer.encode(text, return_tensors="pt").to(device)
+                # Encode text to token IDs (SentencePiece returns list, not tensor)
+                token_ids = self.tokenizer.encode(text)
+                tokens = torch.tensor([token_ids], dtype=torch.long).to(device)
                 with torch.no_grad():
                     result = self.model.generate(tokens)
                 return result["audio"][0].cpu().numpy()
@@ -436,10 +439,13 @@ class EnhancedLLMService:
                 context = self._build_context()
                 prompt = f"{context}\nUser: {text}\nAssistant:"
                 
-                input_ids = self.tokenizer.encode(prompt, return_tensors="pt").to(device)
+                # Encode text to token IDs (SentencePiece returns list, not tensor)
+                input_ids = self.tokenizer.encode(prompt)
+                input_tensor = torch.tensor([input_ids], dtype=torch.long).to(device)
+                
                 with torch.no_grad():
                     output_ids = self.model.generate(
-                        input_ids, 
+                        input_tensor, 
                         max_new_tokens=100, 
                         pad_token_id=self.tokenizer.eos_id(),
                         temperature=0.7,
@@ -447,7 +453,9 @@ class EnhancedLLMService:
                         top_p=0.9
                     )
                 
-                response = self.tokenizer.decode(output_ids[0], skip_special_tokens=True)
+                # Decode response (remove input tokens)
+                response_ids = output_ids[0][len(input_ids):].cpu().tolist()
+                response = self.tokenizer.decode(response_ids)
                 response = response.split("Assistant:")[-1].strip()
             else:
                 # Enhanced fallback responses
